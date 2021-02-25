@@ -62,6 +62,7 @@ struct Probleme
 		}
 
 		ofstream sortieVoitures(fichierEntree + ".infoVoitures", ios::out);
+		sortieVoitures << nbVoitures - voitures.size() << endl;
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)
 			sortieVoitures << voiture.longueurChemin << endl;

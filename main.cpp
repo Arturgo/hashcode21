@@ -12,6 +12,6 @@ int main(int ac, char **av) {
 	string fichierEntree = "";
 	for (int i(0); av[1][i]; ++i)
 		fichierEntree += av[1][i];
-	Probleme probleme(fichierEntree);
+	probleme = Probleme(fichierEntree);
 	return 0;
 }

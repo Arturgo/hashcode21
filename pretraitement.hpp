@@ -23,12 +23,16 @@ struct Probleme
 	int nbRues;
 	int nbVoitures;
 	int bonus;
+	string fichierEntree;
 
 	vector<Voiture> voitures;
 	vector<Arc> arcs;
 	map<string, int> nomToId;
 
+	Probleme() {}
+
 	Probleme(string fichierEntree)
+		: fichierEntree(fichierEntree)
 	{
 		ifstream entree(fichierEntree, ios::in);
 		
@@ -103,5 +107,24 @@ struct Probleme
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)
 			sortieVoitures << voiture.longueurChemin << endl;
+	}
+};
+
+Probleme probleme;
+
+struct Solution
+{
+	vector< vector< pair<int, int > > > solution;
+
+	void afficheSolution()
+	{
+		ofstream sortieSolution(probleme.fichierEntree + ".meilleureSolution", ios::out);
+		sortieSolution << solution.size() << endl;
+		for (int id(0); id < probleme.nbIntersections; ++id)
+		{
+			sortieSolution << solution[id].size() << endl;
+			for (auto [idChemin, duree] : solution[id])
+				sortieSolution << probleme.arcs[idChemin].identifiant << ' ' << duree << endl;		
+		}
 	}
 };

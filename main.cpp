@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #include "pretraitement.hpp"
-#include "solution.hpp"
+#include "better.h"
 using namespace std;
 
 

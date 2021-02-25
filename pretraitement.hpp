@@ -180,8 +180,8 @@ int scoreSolution(const Solution &sol)
 				Arc curArc = arcs[ voitures[idVoiture].chemin[idChemin]];
 				if (queues[ idArc].front() != idVoiture)
 					continue;
-				assert( dureeCycle[curArc.iFin]);
-				if (idRueOuverte(sol.solution[curArc.iFin], t % dureeCycle[curArc.iFin]) != idArc)
+				//assert( dureeCycle[curArc.iFin]);
+				if (!dureeCycle[curArc.iFin] or idRueOuverte(sol.solution[curArc.iFin], t % dureeCycle[curArc.iFin]) != idArc)
 					continue;
 				toPop.push_back(idArc);
 				idChemin++;

@@ -58,13 +58,9 @@ struct Probleme
 				int id = nomToId[nom];
 				curVoiture.chemin[j] = id;
 				curVoiture.longueurChemin += arcs[id].longueur;
+				areteVue[id] = true;
 			}
-			if (curVoiture.longueurChemin <= dureeSimulation)
-			{
-				voitures.push_back(curVoiture);
-				for (int id : curVoiture.chemin)
-					areteVue[id] = true;
-			}
+			voitures.push_back(curVoiture);
 		}
 		vector<int> nouvelId(nbRues,-1);
 		vector<Arc> nouveauxArcs;
@@ -104,7 +100,6 @@ struct Probleme
 		for (bool c : areteVue)
 			nbArcsInutiles += !c;
 		cerr << "Nombre d'arcs inutiles : " << nbArcsInutiles << endl;
-		cerr << "Nombre de voitures inutiles : " << nbVoitures - voitures.size() << endl;
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)
 			sortieVoitures << voiture.longueurChemin << endl;

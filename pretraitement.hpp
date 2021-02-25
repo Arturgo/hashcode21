@@ -5,6 +5,7 @@ using namespace std;
 struct Arc
 {
 	string identifiant;
+	int id;
 	int iDepart, iFin;
 	int longueur;
 	
@@ -16,7 +17,6 @@ struct Voiture
 	vector<int> chemin;
 	int longueurChemin;
 };
-
 
 struct Probleme
 {
@@ -83,6 +83,7 @@ struct Probleme
 			{
 				nouvelId[i] = curId++;
 				nouveauxArcs.push_back(arcs[i]);
+				nouveauxArcs.back().id = nouvelId[i];
 			}
 		arcs = move(nouveauxArcs);
 		nbRues = (int)arcs.size();
@@ -92,12 +93,6 @@ struct Probleme
 			{
 				assert(nouvelId[id] != -1);
 				id = nouvelId[id];
-			}
-		for (auto v : voitures)
-			for (auto id : v.chemin)
-			{
-				assert(id >= 0);
-				assert(id < (int)arcs.size());
 			}
 
 		vector<int> degreEntrant(nbIntersections), degreSortant(nbIntersections);
@@ -167,7 +162,7 @@ int scoreSolution(const Solution &sol)
 		queues[voitures[idVoiture].chemin[0]].push(idVoiture);
 	}
 
-	for (int t(0); t <= probleme.dureeSimulation; ++t)
+	for (int t(0); t < probleme.dureeSimulation; ++t)
 	{
 		vector<int> toPop;
 		for (int idVoiture(0); idVoiture < probleme.nbVoitures; ++idVoiture)
@@ -183,7 +178,6 @@ int scoreSolution(const Solution &sol)
 			if (!lenRestante)
 			{
 				Arc curArc = arcs[ voitures[idVoiture].chemin[idChemin]];
-				//Arc curArc = arcs[idArc];
 				if (queues[ idArc].front() != idVoiture)
 					continue;
 				assert( dureeCycle[curArc.iFin]);

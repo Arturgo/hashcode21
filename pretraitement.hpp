@@ -66,8 +66,38 @@ struct Probleme
 					areteVue[id] = true;
 			}
 		}
-		vector<int> nouvelId(nbRues);
+		vector<int> nouvelId(nbRues,-1);
+		vector<Arc> nouveauxArcs;
 		int curId(0);
+		for (int i(0); i < nbRues; ++i)
+			if (areteVue[i])
+			{
+				nouvelId[i] = curId++;
+				nouveauxArcs.push_back(arcs[i]);
+			}
+		arcs = move(nouveauxArcs);
+
+		for (int i(0); i < (int)voitures.size(); ++i)
+			for (auto &id : voitures[i].chemin)
+			{
+				assert(nouvelId[id] != -1);
+				id = nouvelId[id];
+			}
+
+		vector<int> degreEntrant(nbIntersections), degreSortant(nbIntersections);
+		for (auto arc : arcs)
+		{
+			degreEntrant[arc.iFin]++;
+			degreSortant[arc.iDepart]++;
+		}
+
+		int degEntrantMax(0), degSortantMax(0);
+		for (auto d : degreEntrant)
+			degEntrantMax = max(degEntrantMax, d);
+		for (auto d : degreSortant)
+			degSortantMax = max(degSortantMax, d);
+		cerr << "Deg sortant max : " << degSortantMax << endl;
+		cerr << "Deg entrant max : " << degEntrantMax << endl;
 
 		ofstream sortieVoitures(fichierEntree + ".infoVoitures", ios::out);
 		int nbArcsInutiles(0);

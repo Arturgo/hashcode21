@@ -2,7 +2,8 @@
 #include "pretraitement.hpp"
 using namespace std;
 
-vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
+Solution calculerSolution(void) {
+	const Probleme &p = probleme;
 	vector<vector<Arc>> parents(p.nbIntersections);
 	
 	for(Arc arc : p.arcs) {
@@ -51,7 +52,7 @@ vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
 				if(!etat[iArc].empty()) {
 					pair<int, int> voiture = etat[iArc].front(); etat[iArc].pop_front();
 					
-					if(voiture.second + 1 != p.voitures[voiture.first].chemin.size()) {
+					if(voiture.second + 1 != (int)p.voitures[voiture.first].chemin.size()) {
 						aAjouter[iTemps + 
 							p.arcs[p.voitures[voiture.first].chemin[voiture.second + 1]].longueur
 						].push_back({voiture.first, voiture.second + 1});
@@ -59,16 +60,14 @@ vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
 				}
 			}
 		}
-		
-		etat = nEtat;
 	}
 	
 	vector<vector<pair<int, int>>> sol(p.nbIntersections);
 	
-	for(int iInter = 0;iInter < nbInters;iInter++) {
-		for(int elem : plan[iInter]) {
+	for(int iInter = 0;iInter < p.nbIntersections;iInter++) {
+		for(int elem : plan[iInter])
 			sol[iInter].push_back({elem, 1});
 	}
 	
-	return sol;
+	return {sol};
 }

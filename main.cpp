@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include "pretraitement.hpp"
+#include "solution.hpp"
 using namespace std;
 
 
@@ -13,5 +14,6 @@ int main(int ac, char **av) {
 	for (int i(0); av[1][i]; ++i)
 		fichierEntree += av[1][i];
 	probleme = Probleme(fichierEntree);
+	calculerSolution().afficheSolution();
 	return 0;
 }

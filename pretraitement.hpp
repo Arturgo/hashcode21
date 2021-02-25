@@ -85,12 +85,19 @@ struct Probleme
 				nouveauxArcs.push_back(arcs[i]);
 			}
 		arcs = move(nouveauxArcs);
+		nbRues = (int)arcs.size();
 
 		for (int i(0); i < (int)voitures.size(); ++i)
 			for (auto &id : voitures[i].chemin)
 			{
 				assert(nouvelId[id] != -1);
 				id = nouvelId[id];
+			}
+		for (auto v : voitures)
+			for (auto id : v.chemin)
+			{
+				assert(id >= 0);
+				assert(id < (int)arcs.size());
 			}
 
 		vector<int> degreEntrant(nbIntersections), degreSortant(nbIntersections);
@@ -136,7 +143,7 @@ int idRueOuverte(const vector<pair<int, int>> cycle, int temps)
 {
 	int curPos(0);
 	while (curPos < (int)cycle.size() and cycle[curPos].second <= temps)
-		temps -= cycle[curPos].second;
+		temps -= cycle[curPos++].second;
 	assert(curPos < (int)cycle.size());
 	return cycle[curPos].first;
 }
@@ -164,28 +171,31 @@ int scoreSolution(const Solution &sol)
 	{
 		for (int idVoiture(0); idVoiture < probleme.nbVoitures; ++idVoiture)
 		{
-			if (curPos[idVoiture].first == (int)voitures[idVoiture].chemin.size())
+			auto &[idChemin , lenRestante] = curPos[idVoiture];
+			if (idChemin == (int)voitures[idVoiture].chemin.size())
 				continue;
-			if (curPos[idVoiture].second == 1)
-				queues[voitures[idVoiture].chemin[curPos[idVoiture].first]].push(idVoiture);
-			if (curPos[idVoiture].second > 0)
-				curPos[idVoiture].second--;
-			if (curPos[idVoiture].second == 0)
+			int idArc = voitures[idVoiture].chemin[idChemin];
+			if (lenRestante == 1)
+				queues[idArc].push(idVoiture);
+			if (lenRestante > 0)
+				lenRestante--;
+			if (!lenRestante)
 			{
-				Arc curArc = arcs[voitures[idVoiture].chemin[curPos[idVoiture].first]];
+				Arc curArc = arcs[idArc];
 				
-				if (idRueOuverte(sol.solution[curArc.iFin], t % dureeCycle[curArc.iFin]) != voitures[idVoiture].chemin[curPos[idVoiture].first])
+				if (idRueOuverte(sol.solution[curArc.iFin], t % dureeCycle[curArc.iFin]) != idArc)
 					continue;
-				if (queues[ voitures[idVoiture].chemin[curPos[idVoiture].first] ].front() != idVoiture)
+				if (queues[ idArc].front() != idVoiture)
 					continue;
+				queues[idArc].pop();
 				queues[voitures[idVoiture].chemin[curPos[idVoiture].first]].pop();
-				curPos[idVoiture].first++;
-				if (curPos[idVoiture].first == (int)voitures[idVoiture].chemin.size())
-					scoreTot += probleme.bonus + probleme.dureeSimulation - t-1;
+				idChemin++;
+				if (idChemin == (int)voitures[idVoiture].chemin.size())
+					scoreTot += probleme.bonus + probleme.dureeSimulation - (t+1);
 				else
 				{
-					Arc nxtArc = arcs[voitures[idVoiture].chemin[curPos[idVoiture].first]];
-					curPos[idVoiture].second = nxtArc.longueur;
+					Arc nxtArc = arcs[voitures[idVoiture].chemin[idChemin]];
+					lenRestante = nxtArc.longueur;
 				}
 			}
 		}
@@ -196,12 +206,22 @@ int scoreSolution(const Solution &sol)
 void Solution::afficheSolution()
 	{
 		ofstream sortieSolution(probleme.fichierEntree + ".meilleureSolution", ios::out);
-		sortieSolution << solution.size() << endl;
+		int nbNonNuls(0);
+		for (auto v : solution)
+			nbNonNuls += !v.empty();
+		sortieSolution << nbNonNuls << endl;
 		cerr << "valeur de la solution : " << scoreSolution(*this);
 		for (int id(0); id < probleme.nbIntersections; ++id)
 		{
+			if (solution[id].empty()) continue;
+			sortieSolution << id << endl;
+
 			sortieSolution << solution[id].size() << endl;
 			for (auto [idChemin, duree] : solution[id])
+			{
+				//assert(idChemin < probleme.arcs.size());
+				assert(0 <= idChemin);
 				sortieSolution << probleme.arcs[idChemin].identifiant << ' ' << duree << endl;		
+			}
 		}
 	}

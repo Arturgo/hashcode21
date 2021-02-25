@@ -48,7 +48,8 @@ struct Probleme
 			arcs.push_back(arc);
 			nomToId[arc.identifiant] = i;
 		}
-
+		
+		vector<int> nbPassages(nbIntersections, 0);
 		for (int i(0); i < nbVoitures; ++i)
 		{
 			Voiture curVoiture;
@@ -64,6 +65,7 @@ struct Probleme
 				curVoiture.chemin[j] = id;
 				curVoiture.longueurChemin += arcs[id].longueur;
 				arcs[id].nbPassent++;
+				nbPassages[arcs[id].iFin]++;
 			}
 			voitures.push_back(curVoiture);
 		}
@@ -112,6 +114,12 @@ struct Probleme
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)
 			sortieVoitures << voiture.longueurChemin << endl;
+			
+		
+		ofstream sortieSommets(fichierEntree + ".infoSommets", ios::out);
+		sortieSommets << nbIntersections << endl;
+		for (int iInter = 0;iInter < nbIntersections;iInter++)
+			sortieSommets << nbPassages[iInter] << endl;
 	}
 };
 

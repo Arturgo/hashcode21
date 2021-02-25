@@ -13,7 +13,17 @@ Solution calculerSolution(void) {
 	vector<vector<int>> plan(p.nbIntersections);
 	
 	for(int iInter = 0;iInter < p.nbIntersections;iInter++) {
-		plan[iInter] = vector<int>(parents[iInter].size(), -1);
+		int estOk = true;
+		
+		for(Arc arc : parents[iInter]) {
+			if(arc.nbPassent > 1)
+				estOk = false;
+		}
+		
+		if(!estOk)
+			plan[iInter] = vector<int>(parents[iInter].size(), -1);
+		else
+			plan[iInter] = vector<int>(p.dureeSimulation, -1);
 	}
 	
 	//schedule le reste
@@ -27,7 +37,7 @@ Solution calculerSolution(void) {
 	vector<vector<pair<int, int>>> aAjouter(p.dureeSimulation + 100 * 1000);
 	vector<set<int>> scheduled(p.nbIntersections);
 	
-	for(int iTemps = 0;iTemps < p.dureeSimulation;iTemps++) {		
+	for(int iTemps = 0;iTemps < p.dureeSimulation;iTemps++) {	
 		for(pair<int, int> ajout : aAjouter[iTemps]) {
 			etat[p.voitures[ajout.first].chemin[ajout.second]].push_back(ajout);
 		}

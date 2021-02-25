@@ -7,6 +7,8 @@ struct Arc
 	string identifiant;
 	int iDepart, iFin;
 	int longueur;
+	
+	int nbPassent;
 };
 
 struct Voiture
@@ -41,12 +43,11 @@ struct Probleme
 		for (int i(0); i < nbRues; ++i)
 		{
 			Arc arc;
+			arc.nbPassent = 0;
 			entree >> arc.iDepart >> arc.iFin >> arc.identifiant >> arc.longueur;
 			arcs.push_back(arc);
 			nomToId[arc.identifiant] = i;
 		}
-
-		vector<bool> areteVue(nbRues);
 
 		for (int i(0); i < nbVoitures; ++i)
 		{
@@ -62,15 +63,21 @@ struct Probleme
 				int id = nomToId[nom];
 				curVoiture.chemin[j] = id;
 				curVoiture.longueurChemin += arcs[id].longueur;
-				areteVue[id] = true;
+				arcs[id].nbPassent++;
 			}
 			voitures.push_back(curVoiture);
 		}
+		
+		int nbArcsInutiles(0);
+		for(int iArc = 0;iArc < (int)arcs.size();iArc++)
+			if(arcs[iArc].nbPassent == 0)
+				nbArcsInutiles++;
+		
 		vector<int> nouvelId(nbRues,-1);
 		vector<Arc> nouveauxArcs;
 		int curId(0);
 		for (int i(0); i < nbRues; ++i)
-			if (areteVue[i])
+			if (arcs[i].nbPassent != 0)
 			{
 				nouvelId[i] = curId++;
 				nouveauxArcs.push_back(arcs[i]);
@@ -100,9 +107,7 @@ struct Probleme
 		cerr << "Deg entrant max : " << degEntrantMax << endl;
 
 		ofstream sortieVoitures(fichierEntree + ".infoVoitures", ios::out);
-		int nbArcsInutiles(0);
-		for (bool c : areteVue)
-			nbArcsInutiles += !c;
+		
 		cerr << "Nombre d'arcs inutiles : " << nbArcsInutiles << endl;
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)

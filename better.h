@@ -3,10 +3,10 @@
 using namespace std;
 
 vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
-	vector<Arc> parents(p.nbIntersections);
+	vector<vector<Arc>> parents(p.nbIntersections);
 	
 	for(Arc arc : p.arcs) {
-		parents[arc.fin].push_back(arc);
+		parents[arc.iFin].push_back(arc);
 	}
 	
 	vector<vector<int>> plan(p.nbIntersections);
@@ -24,27 +24,28 @@ vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
 	}
 	
 	vector<vector<pair<int, int>>> aAjouter(p.dureeSimulation);
+	vector<set<int>> scheduled(p.nbIntersections);
 	
 	for(int iTemps = 0;iTemps < p.dureeSimulation;iTemps++) {		
 		for(pair<int, int> ajout : aAjouter[iTemps]) {
-			etat[p.voitures[p.first].chemin[ajout.second]].push_back(ajout);
+			etat[p.voitures[ajout.first].chemin[ajout.second]].push_back(ajout);
 		}
 		
 		for(int iInter = 0;iInter < p.nbIntersections;iInter++) {
-			int iArc = plan[iInter][iTemps * plan[iInter].size()];
+			int iArc = plan[iInter][iTemps % plan[iInter].size()];
 			
 			if(iArc == -1) {
-				for(int parent : parents[iInter]) {
-					if(!etat[parent].empty()) {
-						iArc = parent;
+				for(Arc arc : parents[iInter]) {
+					int id = arc.id;
+					if(!etat[id].empty() && !scheduled[iInter].count(id)) {
+						iArc = id;
+						scheduled[iInter].insert(id);
 						break;
 					}
 				}
-				
-				
 			}
 			
-			plan[iInter][iTemps * plan[iInter].size()] = iArc;
+			plan[iInter][iTemps % plan[iInter].size()] = iArc;
 			
 			if(iArc != -1) {
 				if(!etat[iArc].empty()) {
@@ -66,7 +67,7 @@ vector<vector<pair<int, int>>> calculerSolution(Probleme p) {
 	
 	for(int iInter = 0;iInter < nbInters;iInter++) {
 		for(int elem : plan[iInter]) {
-			sol[iInter].push_back({elem, 0});
+			sol[iInter].push_back({elem, 1});
 	}
 	
 	return sol;

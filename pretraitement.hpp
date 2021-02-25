@@ -42,6 +42,8 @@ struct Probleme
 			nomToId[arc.identifiant] = i;
 		}
 
+		vector<bool> areteVue(nbRues);
+
 		for (int i(0); i < nbVoitures; ++i)
 		{
 			Voiture curVoiture;
@@ -58,11 +60,21 @@ struct Probleme
 				curVoiture.longueurChemin += arcs[id].longueur;
 			}
 			if (curVoiture.longueurChemin <= dureeSimulation)
+			{
 				voitures.push_back(curVoiture);
+				for (int id : curVoiture.chemin)
+					areteVue[id] = true;
+			}
 		}
+		vector<int> nouvelId(nbRues);
+		int curId(0);
 
 		ofstream sortieVoitures(fichierEntree + ".infoVoitures", ios::out);
-		sortieVoitures << nbVoitures - voitures.size() << endl;
+		int nbArcsInutiles(0);
+		for (bool c : areteVue)
+			nbArcsInutiles += !c;
+		cerr << "Nombre d'arcs inutiles : " << nbArcsInutiles << endl;
+		cerr << "Nombre de voitures inutiles : " << nbVoitures - voitures.size() << endl;
 		sortieVoitures << voitures.size() << endl;
 		for (auto voiture : voitures)
 			sortieVoitures << voiture.longueurChemin << endl;

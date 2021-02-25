@@ -15,15 +15,26 @@ Solution calculerSolution(void) {
 	for(int iInter = 0;iInter < p.nbIntersections;iInter++) {
 		int estOk = true;
 		
+		int somme = 0;
 		for(Arc arc : parents[iInter]) {
 			if(arc.nbPassent > 1)
 				estOk = false;
+			somme += arc.nbPassent;
 		}
 		
-		if(!estOk)
-			plan[iInter] = vector<int>(parents[iInter].size(), -1);
-		else
-			plan[iInter] = vector<int>(p.dureeSimulation, -1);
+		if(parents[iInter].size() < 10) {
+			for(Arc arc : parents[iInter]) {
+				for(int iFois = 0;iFois < min(1, (60 * arc.nbPassent) / somme);iFois++) {
+					plan[iInter].push_back(arc.id);
+				}
+			}
+		}
+		else {
+			if(!estOk)
+				plan[iInter] = vector<int>(parents[iInter].size(), -1);
+			else
+				plan[iInter] = vector<int>(p.dureeSimulation, -1);
+		}
 	}
 	
 	//schedule le reste
